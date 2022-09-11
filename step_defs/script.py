@@ -63,13 +63,12 @@ driver.implicitly_wait(7)
 smartphones = driver.find_element('xpath', '//a[text()="Смартфоны"]')
 print(smartphones.text)
 smartphones.click()
-print(smartphones.text, 'нажата')
 driver.implicitly_wait(5)
 
 #d.	Перейти в «Все фильтры».
 all_filters_button = driver.find_element('xpath', '//a[@data-auto="allFiltersButton"]')
 all_filters_button.click()
-print(all_filters_button.text, 'нажата')
+print(all_filters_button.text)
 
 
 #driver.findElement(By.Xpath("//*[contains(@class,'class1 class2')]"));
