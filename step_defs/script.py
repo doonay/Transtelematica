@@ -3,6 +3,38 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from random import choice
 import time
+import logging.config
+
+LOGGING_CONFIG = {
+    'version': 1,
+    'disable_existing_loggers': False,
+
+    'formatters': {
+        'default_formatter': {
+            'format': '[%(levelname)s:%(asctime)s] %(message)s'
+        },
+    },
+
+    'handlers': {
+        'stream_handler': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'default_formatter',
+        },
+    },
+
+    'loggers': {
+        'logger': {
+            'handlers': ['stream_handler'],
+            'level': 'DEBUG',
+            'propagate': True
+        }
+    }
+}
+
+logging.config.dictConfig(LOGGING_CONFIG)
+logger = logging.getLogger('logger')
+logger.setLevel(logging.DEBUG)
+logger.debug('init debug log')
 
 desktop_agents = ['Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36',
                   'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36',
@@ -15,7 +47,11 @@ desktop_agents = ['Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML
                   'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36',
                   'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0']
 
+
+
 chrome_options = Options()
+
+
 ua = choice(desktop_agents)
 print(ua)
 chrome_options.add_argument('user-agent=' + ua)
@@ -26,116 +62,169 @@ s = Service('C:/Transtelematica/chromedriver/chromedriver.exe')
 driver = webdriver.Chrome(service=s, options=chrome_options)
 #driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
 driver.maximize_window()
+time.sleep(3)
+logger.debug('Запустили браузер, максимизировали')
 print('Запустили браузер, максимизировали')
 print('----------------------------------')
-time.sleep(3)
 
 #b.	Зайти на yandex.ru
-driver.get('http://www.yandex.ru/')
-print('зашли в яндекс')
+#
+# ---===###!!!   13.09.22 сайт yandex.ru редиректит на яндекс дзэн   !!!###===---
+#
+#driver.get('http://www.yandex.ru/')
+
+
+'''
+logger.debug('Открыли yandex.ru')
+print('Открыли yandex.ru')
 print('--------------')
-time.sleep(2)
-print(driver.window_handles)
-print(driver.current_window_handle)
 
+try:
+    driver.find_element('//div[@class="modal__close"]').click()
+except:
+    pass
+
+
+#print(driver.window_handles)
+#print(driver.current_window_handle)
 #c.	В разделе «Маркет» выбрать «Смартфоны».
-market_element = driver.find_element('xpath', "//a[@data-id='market']")
-#market_link = market_element.get_attribute('href')
-print(market_element.text)
-market_element.click()
 
-print(driver.window_handles)
-print(driver.current_window_handle)
+while True:
+    try:
+        market_element = driver.find_element('xpath', "//a[@data-id='market']")
+        market_element.click()
+        print(market_element.text)
+        logger.debug('Перешли на', market_element.text)
+        print('--------------')
+    except Exception as _ex:
+        print(_ex)
+        driver.implicitly_wait(15)
+    else:
+        break
+
+
 driver.switch_to.window(driver.window_handles[1])
-#driver.close()
-print(driver.window_handles)
-print(driver.current_window_handle)
-print('зашли в маркет')
-print('----------------------------')
 driver.implicitly_wait(10)
+logger.debug('переключились на вкладку с маркетом')
+print('переключились на вкладку с маркетом')
+print('--------------')
+driver.implicitly_wait(10)
+'''
+#Стартуем сразу с яндекс маркета
+driver.get('https://market.yandex.ru/')
+time.sleep(10)
 
-button = driver.find_element('xpath', '//button[@id="catalogPopupButton"]')
-#button = driver.find_element('xpath', '//noindex[@class="q2jz_"]')
+div = driver.find_element('xpath', '//div[@data-tid="f5f0a469"]')
+button = div.find_element('xpath', 'button[@id="catalogPopupButton"]')
+driver.implicitly_wait(10)
 button.click()
-print(button.text, 'нажата')
-driver.implicitly_wait(7)
+print('Каталог')
+logger.debug('Каталог')
+print('--------------')
+
+driver.implicitly_wait(15)
 
 smartphones = driver.find_element('xpath', '//a[text()="Смартфоны"]')
-print(smartphones.text)
 smartphones.click()
-driver.implicitly_wait(5)
+driver.implicitly_wait(10)
+print('Смартфоны')
+logger.debug('Смартфоны')
+print('--------------')
 
 #d.	Перейти в «Все фильтры».
 all_filters_button = driver.find_element('xpath', '//a[@data-auto="allFiltersButton"]')
 all_filters_button.click()
-print(all_filters_button.text)
+driver.implicitly_wait(10)
+print('все фильтры')
+logger.debug('все фильтры')
+print('--------------')
 
-
-#driver.findElement(By.Xpath("//*[contains(@class,'class1 class2')]"));
-#driver.findElement(By.cssSelector(".class1.class2"));
-driver.implicitly_wait(3)
 
 #e.	Задать параметр поиска до 20000 рублей
-#driver.find_element('class', '_2xtC2').send_keys('20000')
-#driver.find_element('xpath', "//*[@class='_2xtC2']").send_keys('20000')
-#'_3i0uk'
-#driver.findElement(By.Xpath("//*[contains(@class,'class1 class2')]"));
-#driver.findElement(By.cssSelector(".class1.class2"));
-
-element1 = driver.find_element('xpath', "//*[@data-filter-id='glprice']")
-name1 = element1.find_element('xpath', "//*[@class='_8zv18']").text
-print(name1)
-print(element1.get_attribute('placeholder'))
-
-element2 = driver.find_element('xpath', "//*[@data-filter-id='14805766']")
-name2 = element2.find_element('xpath', "//*[@class='_8zv18']").text
-print(name2)
-print(element2.get_attribute('placeholder'))
-
-element1.send_keys('20000')
-print('---20000---')
-#driver.findElement(By.Xpath("//*[contains(@class,'class1 class2')]"));
-#driver.findElement(By.cssSelector(".class1.class2"));
-
-'''
-#попробовать без клика
-#driver.find_element('xpath', "//*[@class='_1RgR0']").click()
-driver.find_element('xpath', "//*[@class='_1RgR0 _2k6P8']").click()
 
 
-#и Диагональ экрана от 3 дюймов.
-driver.find_element('xpath', '/html/body/div[4]/section/div[2]/div/div/div[2]/div[1]/div[12]/div/div/div/div[1]/input').send_keys('3')
-print('---3---')
+driver.implicitly_wait(15)
 
-#print('---click---')
-#верхний класс 'yXKAc _1H_kO'
-#driver.find_element('xpath', "//*[@class='_2xtC2']").send_keys('20000')
+input_divs_glprice = driver.find_elements('xpath', '//div[@data-filter-id="glprice"]//div[@data-tid="d3871ccf"]')
+print('find input divs done')
+input_glprice_ot = input_divs_glprice[0].find_element('xpath', 'input')
+input_glprice_do = input_divs_glprice[1].find_element('xpath', 'input')
+print('find do done')
 
-#класс кнопки '_2qvOO _3qN-v _1Rc6L'
-#final_button_link = 
-time.sleep(2)
+print(input_glprice_do.get_attribute('placeholder'))
+input_glprice_do.send_keys('20000')
+print('выставили 20000')
+print(input_glprice_do.get_attribute('placeholder'))
+print(input_glprice_do.get_attribute('value'))
+driver.implicitly_wait(10)
 
-final_link = driver.find_element('xpath', "//*[@class='_2qvOO _3qN-v _1Rc6L']").get_attribute('href')
-print('---final click---')
+print('---')
+input_divs_14805766 = driver.find_elements('xpath', '//div[@data-filter-id="14805766"]//div[@data-tid="d3871ccf"]')
+print('find input divs done')
+print('find ot done')
 
-driver.get(final_link)
 
 
-driver.find_element('type', 'text').send_keys('20000')
+#e. и Диагональ экрана от 3 дюймов.
 
-driver.find_element('xpath', '/html/body/div[4]/section/div[2]/div/div/div[2]/div[1]/div[13]/div/div/div/div[2]/input').send_keys('3')
+driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+driver.implicitly_wait(2)
+butt = driver.find_element('xpath', '//div[@data-filter-id="14805766"]//button')
+butt.click()
 
-#кликаем на кнопку
-show_button = driver.find_element('xpath', '/html/body/div[4]/section/div[2]/div/div/div[3]/div/div/a[2]').click()
+input_14805766_ot = driver.find_element('xpath', '//*[@data-filter-id="14805766"]//input[1]')
+input_14805766_ot.send_keys('3')
+print(input_14805766_ot.get_attribute('placeholder'))
+print(input_14805766_ot.get_attribute('value'))
+print('выставили 3')
 
-#либо переходим по ссылке, тут не важно
-#show_button_link = driver.find_element('xpath', '/html/body/div[4]/section/div[2]/div/div/div[3]/div/div/a[2]').get_attribute('href')
-#print(show_button_link)
-#driver.get(show_button_link)
 
+driver.implicitly_wait(15)
+
+
+print('Добрались до кнопки')
+final_button = driver.find_element('xpath', '//a[@class="_2qvOO _3qN-v _1Rc6L"]')
+print('set final button done')
+driver.implicitly_wait(5)
+final_button.click()
+print('push button done')
+driver.implicitly_wait(15)
 
 
 #f.	Выбрать не менее 5 любых производителей.
+
+driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+driver.implicitly_wait(10)
+print('скрольнулись вниз')
+all_companies = driver.find_element('xpath', '//span[text()="Показать всё"]/parent::*')
+print('перешли к родителю', all_companies.text)
+driver.implicitly_wait(10)
+print(all_companies.text, 'найден')
+
+all_companies.click()
+driver.implicitly_wait(10)
+driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+driver.implicitly_wait(10)
+print(all_companies.text, 'нажат')
+
+
+five_companies = driver.find_elements('xpath', '[@data-zone-data={"filterId":"7893318","filterName":"Производитель","index":4}]/fieldset//div[@class="_2XVtn"]')
+
+for company in five_companies:
+    print(company)
+
+    '''
+    enabled = five.find_element('xpath', '//input[@aria-disabled="false"]')
+    enabled.click()
+    print(enabled.get_attribute('name'))
+    '''
+
+'''
+//*[title="50"]/parent::store
+This XPath will only select the parent node if it is a store.
+But you can also use one of these
+//*[title="50"]/parent::*
+//*[title="50"]/..
 #g.	Нажать кнопку «Показать».
 #h.	Посчитать кол-во смартфонов на одной странице.
 #i.	Запомнить последний из списка.
@@ -143,15 +232,11 @@ show_button = driver.find_element('xpath', '/html/body/div[4]/section/div[2]/div
 #k.	Найти и нажать по имени запомненного объекта.
 #l.	Вывести рейтинг выбранного товара.
 #m.	Закрыть браузер.
-
 time.sleep(30) # Let the user actually see something!
 #search_box = driver.find_element_by_name('q')
 #search_box.send_keys('ChromeDriver')
 #search_box.submit()
 #time.sleep(5) # Let the user actually see something!
 driver.quit()
-
-
-
 	
 '''
