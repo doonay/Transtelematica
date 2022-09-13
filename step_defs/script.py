@@ -47,10 +47,7 @@ desktop_agents = ['Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML
                   'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36',
                   'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0']
 
-
-
 chrome_options = Options()
-
 
 ua = choice(desktop_agents)
 print(ua)
@@ -71,24 +68,23 @@ print('----------------------------------')
 #
 # ---===###!!!   13.09.22 сайт yandex.ru редиректит на яндекс дзэн   !!!###===---
 #
-#driver.get('http://www.yandex.ru/')
+#driver.get('http://www.yandex.ru')
+
 
 
 '''
-logger.debug('Открыли yandex.ru')
-print('Открыли yandex.ru')
-print('--------------')
-
 try:
     driver.find_element('//div[@class="modal__close"]').click()
 except:
     pass
-
+'''
 
 #print(driver.window_handles)
 #print(driver.current_window_handle)
 #c.	В разделе «Маркет» выбрать «Смартфоны».
 
+
+'''
 while True:
     try:
         market_element = driver.find_element('xpath', "//a[@data-id='market']")
@@ -104,6 +100,7 @@ while True:
 
 
 driver.switch_to.window(driver.window_handles[1])
+
 driver.implicitly_wait(10)
 logger.debug('переключились на вкладку с маркетом')
 print('переключились на вкладку с маркетом')
@@ -111,25 +108,56 @@ print('--------------')
 driver.implicitly_wait(10)
 '''
 #Стартуем сразу с яндекс маркета
-driver.get('https://market.yandex.ru/')
+driver.get('https://market.yandex.ru')
+logger.debug('Открыли yandex.market.ru')
+print('Открыли yandex.market.ru')
+print('--------------')
+
 time.sleep(10)
 
-div = driver.find_element('xpath', '//div[@data-tid="f5f0a469"]')
-button = div.find_element('xpath', 'button[@id="catalogPopupButton"]')
-driver.implicitly_wait(10)
-button.click()
+while True: #при капче капчуем пока руками
+    try:
+        catalog = driver.find_element('xpath', '//div[@data-tid="f5f0a469"]')
+        print(catalog)
+        #catalog = driver.find_element('xpath', '//button[text()="Каталог"]')
+        '''
+        div = driver.find_element('xpath', '//div[@data-tid="f5f0a469"]')
+        button = div.find_element('xpath', 'button[@id="catalogPopupButton"]')
+        button.click()
+        '''
+        catalog.click()
+        driver.implicitly_wait(10)
+        break
+    except Exception as _ex:
+        print(_ex)
+        driver.implicitly_wait(15)
+
+
+
+
 print('Каталог')
 logger.debug('Каталог')
 print('--------------')
 
 driver.implicitly_wait(15)
 
-smartphones = driver.find_element('xpath', '//a[text()="Смартфоны"]')
-smartphones.click()
-driver.implicitly_wait(10)
-print('Смартфоны')
-logger.debug('Смартфоны')
-print('--------------')
+while True: #при капче капчуем пока руками
+    try:
+        smartphones = driver.find_element('xpath', '//a[text()="Смартфоны"]')
+        smartphones.click()
+        driver.implicitly_wait(10)
+        print('Смартфоны')
+        logger.debug('Смартфоны')
+        print('--------------')
+
+    except Exception as _ex:
+        print(_ex)
+        driver.implicitly_wait(15)
+    else:
+        break
+
+
+
 
 #d.	Перейти в «Все фильтры».
 all_filters_button = driver.find_element('xpath', '//a[@data-auto="allFiltersButton"]')
@@ -199,17 +227,16 @@ print('скрольнулись вниз')
 all_companies = driver.find_element('xpath', '//span[text()="Показать всё"]/parent::*')
 print('перешли к родителю', all_companies.text)
 driver.implicitly_wait(10)
-print(all_companies.text, 'найден')
+print(all_companies.text, 'найден') #Все производители
 
 all_companies.click()
+print('Все производители нажат')
 driver.implicitly_wait(10)
 driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+print('скрольнулись вниз')
 driver.implicitly_wait(10)
-print(all_companies.text, 'нажат')
 
-
-five_companies = driver.find_elements('xpath', '[@data-zone-data={"filterId":"7893318","filterName":"Производитель","index":4}]/fieldset//div[@class="_2XVtn"]')
-
+five_companies = driver.find_elements('xpath', '[//div@data-zone-data="{"filterId":"7893318","filterName":"Производитель","index":4}"]/fieldset//div[@class="_2XVtn"]')
 for company in five_companies:
     print(company)
 
