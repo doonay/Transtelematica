@@ -125,48 +125,45 @@ while True: #при капче капчуем пока руками
         button = div.find_element('xpath', 'button[@id="catalogPopupButton"]')
         button.click()
         '''
-        catalog.click()
         driver.implicitly_wait(10)
+        catalog.click()
         break
     except Exception as _ex:
         print(_ex)
-        driver.implicitly_wait(15)
-
-
-
-
+        driver.implicitly_wait(10)
 print('Каталог')
 logger.debug('Каталог')
 print('--------------')
 
-driver.implicitly_wait(15)
+driver.implicitly_wait(10)
 
 while True: #при капче капчуем пока руками
     try:
         smartphones = driver.find_element('xpath', '//a[text()="Смартфоны"]')
-        smartphones.click()
         driver.implicitly_wait(10)
-        print('Смартфоны')
-        logger.debug('Смартфоны')
-        print('--------------')
-
+        smartphones.click()
+        break
     except Exception as _ex:
         print(_ex)
-        driver.implicitly_wait(15)
-    else:
-        break
-
-
-
+        driver.implicitly_wait(10)
+print('Смартфоны')
+logger.debug('Смартфоны')
+print('--------------')
 
 #d.	Перейти в «Все фильтры».
-all_filters_button = driver.find_element('xpath', '//a[@data-auto="allFiltersButton"]')
-all_filters_button.click()
-driver.implicitly_wait(10)
+
+while True: #при капче капчуем пока руками
+    try:
+        all_filters_button = driver.find_element('xpath', '//a[@data-auto="allFiltersButton"]')
+        driver.implicitly_wait(10)
+        all_filters_button.click()
+        break
+    except Exception as _ex:
+        print(_ex)
+        driver.implicitly_wait(10)
 print('все фильтры')
 logger.debug('все фильтры')
 print('--------------')
-
 
 #e.	Задать параметр поиска до 20000 рублей
 
@@ -236,15 +233,15 @@ driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 print('скрольнулись вниз')
 driver.implicitly_wait(10)
 
-five_companies = driver.find_elements('xpath', '[//div@data-zone-data="{"filterId":"7893318","filterName":"Производитель","index":4}"]/fieldset//div[@class="_2XVtn"]')
+five_companies = driver.find_elements('xpath', '[//div[@class="_2XVtn"]')
 for company in five_companies:
     print(company)
 
-    '''
-    enabled = five.find_element('xpath', '//input[@aria-disabled="false"]')
-    enabled.click()
-    print(enabled.get_attribute('name'))
-    '''
+'''
+enabled = five.find_element('xpath', '//input[@aria-disabled="false"]')
+enabled.click()
+print(enabled.get_attribute('name'))
+'''
 
 '''
 //*[title="50"]/parent::store
