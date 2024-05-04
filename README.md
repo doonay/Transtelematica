@@ -1,2 +1,1 @@
-# Transtelematica
-Test project
+# Попытка спарсить яндекс маркет (Selenium)
